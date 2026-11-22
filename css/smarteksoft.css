@@ -313,13 +313,13 @@ input:focus-visible {
   padding: 12px;
   border: 0;
   border-radius: 10px;
-  background: var(--rojo);
+  background: var(--azul);
   color: #fff;
   font: inherit;
   cursor: pointer;
   transition: 0.3s;
 }
-.btn-acceder:hover:not(:disabled) { background: var(--rojo-hover); }
+.btn-acceder:hover:not(:disabled) { background: #6aa8f0; }
 .btn-acceder:disabled { opacity: 0.6; cursor: wait; }
 
 /* Paleta de comandos (Ctrl + K) */
