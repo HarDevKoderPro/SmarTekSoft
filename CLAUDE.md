@@ -1,3 +1,11 @@
+> **AVISO (2026-11-22): este archivo está parcialmente desactualizado.** El proyecto se llama ahora **SmartekSoft**
+> (repo `HarDevKoderPro/smarteksoft`, antes `buscatips`; carpeta local `D:\DESARROLLO DE SOFTWARE\PROYECTOS\CLAUDE\SmartekSoft`).
+> Cambios posteriores a este texto: el login de Google se eliminó y se entra solo con **clave maestra** + código de recuperación
+> (`api/auth.php`, `api/clave_maestra.php`, `scripts/clave-maestra.php`); el front es la pantalla de inicio con tarjetas
+> (Tips, Drive, Tutoriales, Clases, Herramientas, Mis apps) con el estilo de Mini Editor Web (`css/smarteksoft.css`, `js/efectos.js`);
+> `api/estado.php` informa el estado de las apps. Las secciones que hablan de Google, PIA o BuscaTips son históricas.
+> Contexto vigente y pendientes: memoria de Claude `smarteksoft-sitio-personal.md`.
+
 # CLAUDE.md - Contexto operativo de BuscaTips
 
 Este documento es la base de contexto para cualquier agente (humano o IA) que trabaje en este repositorio.
