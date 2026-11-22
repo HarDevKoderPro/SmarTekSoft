@@ -1,6 +1,6 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-09";
+import { iniciarMatrix } from "./efectos.js?v=20261122-10";
 
-const VERSION = "20261122-09";
+const VERSION = "20261122-10";
 const routes = {
   home: document.getElementById("home-screen"),
   apps: document.getElementById("apps-screen"),
@@ -219,7 +219,7 @@ const comandos = [
   { nombre: "Abrir Tips", clave: "tips notas", accion: () => navegar("tips") },
   { nombre: "Abrir Drive", clave: "drive archivos", accion: () => navegar("drive") },
   { nombre: "Ver Mis apps", clave: "apps aplicaciones proyectos", accion: () => navegar("apps") },
-  { nombre: "Abrir Bases de datos", clave: "sql bases datos", accion: abrirApp("sql.smarteksoft.com") },
+  { nombre: "Abrir Bases de datos", clave: "sql bases datos", accion: abrirApp("basesdatos-compucec.netlify.app") },
   { nombre: "Abrir RAEE", clave: "raee", accion: abrirApp("raee.smarteksoft.com") },
   { nombre: "Abrir Soporte", clave: "soporte", accion: abrirApp("soporte.smarteksoft.com") },
   { nombre: "Abrir Tu Cultura", clave: "tucultura cultura tienda", accion: abrirApp("tucultura.smarteksoft.com") },

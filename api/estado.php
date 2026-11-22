@@ -15,9 +15,9 @@ if (!obtenerUsuarioSesion()) {
 // Libera el bloqueo de la sesión: las comprobaciones de abajo pueden tardar unos segundos.
 session_write_close();
 
-// Apps que se vigilan: se consultan por la red interna de Docker (sin salir a internet).
+// Apps que se vigilan: por la red interna de Docker, salvo Bases de datos (Netlify, por internet).
 const APPS_VIGILADAS = [
-    ['id' => 'sql', 'nombre' => 'Bases de datos', 'host' => 'sql.smarteksoft.com', 'url' => 'http://tutorialbd-web-1:80/'],
+    ['id' => 'sql', 'nombre' => 'Bases de datos', 'host' => 'basesdatos-compucec.netlify.app', 'url' => 'https://basesdatos-compucec.netlify.app/'],
     ['id' => 'raee', 'nombre' => 'RAEE', 'host' => 'raee.smarteksoft.com', 'url' => 'http://raee-app-1:3100/'],
     ['id' => 'soporte', 'nombre' => 'Soporte', 'host' => 'soporte.smarteksoft.com', 'url' => 'http://soporte-app-1:3200/'],
     ['id' => 'tucultura', 'nombre' => 'Tu Cultura', 'host' => 'tucultura.smarteksoft.com', 'url' => 'http://tucultura-app-1:80/'],
