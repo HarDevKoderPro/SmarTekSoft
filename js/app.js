@@ -1,13 +1,14 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-12";
+import { iniciarMatrix } from "./efectos.js?v=20261122-13";
 
-const VERSION = "20261122-12";
+const VERSION = "20261122-13";
 const routes = {
   home: document.getElementById("home-screen"),
+  clases: document.getElementById("clases-screen"),
   apps: document.getElementById("apps-screen"),
   tips: document.getElementById("app"),
   drive: document.getElementById("drive-screen"),
 };
-const routeByHash = { "#home": "home", "#apps": "apps", "#tips": "tips", "#drive": "drive" };
+const routeByHash = { "#home": "home", "#clases": "clases", "#apps": "apps", "#tips": "tips", "#drive": "drive" };
 
 const gate = document.getElementById("login-modal");
 const campo = iniciarMatrix(document.getElementById("campo"));
@@ -31,7 +32,7 @@ async function asegurarModuloTips() {
 function irA(routeName) {
   Object.values(routes).forEach((el) => el.classList.add("screen-hidden"));
   routes[routeName].classList.remove("screen-hidden");
-  if (routeName === "home" || routeName === "apps") {
+  if (routeName === "home" || routeName === "apps" || routeName === "clases") {
     campo.activar();
     iniciarEstado();
   } else {
@@ -218,8 +219,9 @@ const comandos = [
   { nombre: "Ir al inicio", clave: "inicio home bienvenida", accion: () => navegar("home") },
   { nombre: "Abrir Tips", clave: "tips notas", accion: () => navegar("tips") },
   { nombre: "Abrir Drive", clave: "drive archivos", accion: () => navegar("drive") },
+  { nombre: "Ver Clases", clave: "clases materias", accion: () => navegar("clases") },
   { nombre: "Ver Mis apps", clave: "apps aplicaciones proyectos", accion: () => navegar("apps") },
-  { nombre: "Abrir Bases de datos", clave: "sql bases datos", accion: abrirApp("basesdatos-compucec.netlify.app") },
+  { nombre: "Abrir Clase: Bases de datos", clave: "clases sql bases datos", accion: abrirApp("basesdatos-compucec.netlify.app") },
   { nombre: "Abrir RAEE", clave: "raee", accion: abrirApp("raee.smarteksoft.com") },
   { nombre: "Abrir Soporte", clave: "soporte", accion: abrirApp("soporte.smarteksoft.com") },
   { nombre: "Abrir Tu Cultura", clave: "tucultura cultura tienda", accion: abrirApp("tucultura.smarteksoft.com") },
@@ -299,13 +301,16 @@ function configurarPaleta() {
 function configurarNavegacion() {
   $("btn-modulo-tips").addEventListener("click", () => navegar("tips"));
   $("btn-modulo-drive").addEventListener("click", () => navegar("drive"));
+  $("btn-modulo-clases").addEventListener("click", () => navegar("clases"));
   $("btn-modulo-apps").addEventListener("click", () => navegar("apps"));
   $("btn-volver-home-tips").addEventListener("click", () => navegar("home"));
   $("btn-volver-home-drive").addEventListener("click", () => navegar("home"));
   $("btn-volver-home-apps").addEventListener("click", () => navegar("home"));
+  $("btn-volver-home-clases").addEventListener("click", () => navegar("home"));
   $("btn-cerrar-sesion").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-home").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-apps").addEventListener("click", cerrarSesion);
+  $("btn-cerrar-sesion-clases").addEventListener("click", cerrarSesion);
   $("btn-ver-clave").addEventListener("click", alternarClave);
   $("form-login").addEventListener("submit", enviarAcceso);
   window.addEventListener("hashchange", resolverRuta);

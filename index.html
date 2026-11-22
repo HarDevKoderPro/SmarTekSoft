@@ -9,8 +9,8 @@
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#000000" />
   <title>SmartekSoft</title>
-  <link rel="stylesheet" href="css/style.css?v=20261122-12" />
-  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-12" />
+  <link rel="stylesheet" href="css/style.css?v=20261122-13" />
+  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-13" />
   <link rel="shortcut icon" href="./images/code.ico" type="image/x-icon" />
 </head>
 
@@ -42,10 +42,10 @@
           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2zM22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/></svg></span>
           <h3>TUTORIALES</h3>
         </div>
-        <div class="card card-soon" aria-disabled="true">
+        <button id="btn-modulo-clases" class="card" type="button">
           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 9 12 4 2 9l10 5 10-5zM6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 9v6"/></svg></span>
           <h3>CLASES</h3>
-        </div>
+        </button>
         <div class="card card-soon" aria-disabled="true">
           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM7 10l3 2-3 2M12 15h5"/></svg></span>
           <h3>HERRAMIENTAS</h3>
@@ -60,6 +60,30 @@
     </div>
   </section>
 
+  <!-- CLASES -->
+  <section id="clases-screen" class="pantalla screen-hidden">
+    <button id="btn-cerrar-sesion-clases" class="logout-link" type="button">Salir</button>
+    <div class="welcome-container">
+      <header>
+        <h1 class="highlight">CLASES</h1>
+        <p class="author">Material y herramientas de mis clases</p>
+      </header>
+
+      <nav class="options options-apps" aria-label="Clases">
+        <a class="card" data-app="sql" href="https://basesdatos-compucec.netlify.app/" target="_blank" rel="noopener">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
+          <h3>BASES DE DATOS</h3>
+          <p class="app-host">basesdatos-compucec.netlify.app</p>
+          <span class="app-status"><i class="dot" aria-hidden="true"></i><span class="app-status-texto">comprobando…</span></span>
+        </a>
+      </nav>
+
+      <button id="btn-volver-home-clases" class="home-btn" type="button" aria-label="Volver al inicio">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10L12 3L21 10V21H14V14H10V21H3Z" /></svg>
+      </button>
+    </div>
+  </section>
+
   <!-- MIS APPS -->
   <section id="apps-screen" class="pantalla screen-hidden">
     <button id="btn-cerrar-sesion-apps" class="logout-link" type="button">Salir</button>
@@ -70,12 +94,6 @@
       </header>
 
       <nav class="options options-apps" aria-label="Apps">
-        <a class="card" data-app="sql" href="https://basesdatos-compucec.netlify.app/" target="_blank" rel="noopener">
-          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
-          <h3>BASES DE DATOS</h3>
-          <p class="app-host">basesdatos-compucec.netlify.app</p>
-          <span class="app-status"><i class="dot" aria-hidden="true"></i><span class="app-status-texto">comprobando…</span></span>
-        </a>
         <a class="card" data-app="raee" href="https://raee.smarteksoft.com" target="_blank" rel="noopener">
           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>
           <h3>RAEE</h3>
@@ -192,7 +210,7 @@
     <div class="palette-box">
       <label class="palette-input">
         <span aria-hidden="true">&gt;_</span>
-        <input id="paleta-input" type="text" placeholder="Escribe un comando: tips, drive, sql…" autocomplete="off" spellcheck="false" />
+        <input id="paleta-input" type="text" placeholder="Escribe un comando: tips, drive, clases…" autocomplete="off" spellcheck="false" />
       </label>
       <ul id="paleta-lista" class="palette-list" role="listbox"></ul>
       <p class="palette-hint">↑ ↓ moverse · Enter ejecutar · Esc cerrar</p>
@@ -202,7 +220,7 @@
   <!-- Marked.js para renderizar Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-  <script src="js/app.js?v=20261122-12" type="module" defer></script>
+  <script src="js/app.js?v=20261122-13" type="module" defer></script>
 </body>
 
 </html>
