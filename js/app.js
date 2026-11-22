@@ -1,6 +1,6 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-21";
+import { iniciarMatrix } from "./efectos.js?v=20261122-22";
 
-const VERSION = "20261122-21";
+const VERSION = "20261122-22";
 const routes = {
   home: document.getElementById("home-screen"),
   clases: document.getElementById("clases-screen"),
