@@ -104,7 +104,20 @@ input:focus-visible {
   cursor: pointer;
   transition: 0.3s;
 }
-.card .icon { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+.card .icon { display: flex; justify-content: center; margin-bottom: 14px; }
+.card .icon svg {
+  width: 52px;
+  height: 52px;
+  fill: none;
+  stroke: var(--azul);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(74, 144, 226, 0.55));
+  transition: 0.3s;
+}
+.card:hover .icon svg { stroke: #fff; filter: drop-shadow(0 0 12px rgba(74, 144, 226, 0.9)); transform: scale(1.08); }
+.card-soon:hover .icon svg { stroke: var(--azul); filter: drop-shadow(0 0 8px rgba(74, 144, 226, 0.55)); transform: none; }
 .card h3 { font-size: 1rem; }
 .card p { margin-top: 4px; font-size: 0.8rem; color: #ccc; }
 .card:hover {
