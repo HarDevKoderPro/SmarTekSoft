@@ -308,7 +308,15 @@ input:focus-visible {
 @media (max-width: 520px) {
   .welcome-container h1 { font-size: 1.6rem; }
   .options { gap: 12px; }
-  .card { width: calc(50% - 6px); min-width: 150px; padding: 16px 12px; }
+  .options { gap: 10px; }
+  .card { width: calc(33.333% - 7px); min-width: 0; padding: 14px 4px; border-radius: 10px; }
+  .card .icon { margin-bottom: 8px; }
+  .card .icon svg { width: 34px; height: 34px; }
+  .card h3 { font-size: 0.68rem; letter-spacing: 0; }
+  .options-apps .card { width: calc(50% - 5px); padding: 14px 8px; }
+  .options-apps .card h3 { font-size: 0.78rem; }
+  .app-host { font-size: 0.65rem !important; }
+  .app-status { margin-top: 6px; font-size: 0.68rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
