@@ -7,82 +7,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
   <meta name="description" content="SmartekSoft: espacio personal privado de tips, clases y herramientas." />
   <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#000000" />
   <title>SmartekSoft</title>
-  <link rel="preload" href="fonts/Sora.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="css/style.css?v=20261122-01" />
-  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-01" />
+  <link rel="stylesheet" href="css/style.css?v=20261122-03" />
+  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-03" />
   <link rel="shortcut icon" href="./images/code.ico" type="image/x-icon" />
 </head>
 
 <body>
-  <!-- Escritorio: se muestra solo con sesión iniciada -->
-  <section id="home-screen" class="home-screen">
-    <div class="desk">
-      <header class="desk-bar">
-        <span class="wordmark">SmartekSoft</span>
-        <div class="desk-user">
-          <span id="home-nombre-corto" class="desk-user-name"></span>
-          <button id="btn-cerrar-sesion-home" class="desk-logout" type="button">Cerrar sesión</button>
-        </div>
+  <canvas id="campo" aria-hidden="true"></canvas>
+
+  <!-- BIENVENIDA: solo con sesión iniciada -->
+  <section id="home-screen" class="pantalla screen-hidden">
+    <button id="btn-cerrar-sesion-home" class="logout-link" type="button">Salir</button>
+    <div class="welcome-container">
+      <div class="profile-frame">
+        <img src="./images/portada.webp" alt="Espacio de trabajo" width="160" height="160" />
+      </div>
+      <header>
+        <h1>BIENVENIDO A <br><span class="highlight">SMARTEKSOFT</span></h1>
+        <p class="author">By Ing. Harold David Valdés</p>
       </header>
 
-      <div class="desk-intro">
-        <h1 id="home-saludo">Hola</h1>
-        <p>Tu espacio privado. Elige por dónde seguir.</p>
-      </div>
-
-      <nav class="desk-modules" aria-label="Módulos">
-        <button id="btn-modulo-tips" class="desk-module desk-module-main" type="button">
-          <span class="desk-module-name">Tips</span>
-          <span class="desk-module-desc">Notas técnicas en Markdown, con búsqueda y categorías.</span>
+      <nav class="options" aria-label="Secciones del sitio">
+        <button id="btn-modulo-tips" class="card" type="button">
+          <span class="icon" aria-hidden="true">💡</span>
+          <h3>TIPS</h3>
+          <p>Notas técnicas con búsqueda y categorías.</p>
         </button>
-
-        <button id="btn-modulo-drive" class="desk-module desk-module-wide" type="button">
-          <span class="desk-module-name">Drive</span>
-          <span class="desk-module-desc">Archivos y carpetas personales.</span>
-          <span class="desk-module-state">En preparación</span>
+        <button id="btn-modulo-drive" class="card" type="button">
+          <span class="icon" aria-hidden="true">🗂️</span>
+          <h3>DRIVE</h3>
+          <p>Tus archivos y carpetas (en preparación).</p>
         </button>
-
-        <div class="desk-module desk-module-soon" aria-disabled="true">
-          <span class="desk-module-name">Tutoriales</span>
-          <span class="desk-module-desc">Paso a paso con código y capturas.</span>
-          <span class="desk-module-state">Próximamente</span>
+        <div class="card card-soon" aria-disabled="true">
+          <span class="icon" aria-hidden="true">📖</span>
+          <h3>TUTORIALES</h3>
+          <p>Paso a paso. Próximamente.</p>
         </div>
-
-        <div class="desk-module desk-module-soon" aria-disabled="true">
-          <span class="desk-module-name">Clases</span>
-          <span class="desk-module-desc">Materias, fichas y sesiones.</span>
-          <span class="desk-module-state">Próximamente</span>
+        <div class="card card-soon" aria-disabled="true">
+          <span class="icon" aria-hidden="true">🎓</span>
+          <h3>CLASES</h3>
+          <p>Materias y sesiones. Próximamente.</p>
         </div>
-
-        <div class="desk-module desk-module-soon" aria-disabled="true">
-          <span class="desk-module-name">Herramientas</span>
-          <span class="desk-module-desc">Estudio y desarrollo en línea.</span>
-          <span class="desk-module-state">Próximamente</span>
+        <div class="card card-soon" aria-disabled="true">
+          <span class="icon" aria-hidden="true">🧰</span>
+          <h3>HERRAMIENTAS</h3>
+          <p>Estudio y desarrollo. Próximamente.</p>
         </div>
+        <button id="btn-modulo-apps" class="card" type="button">
+          <span class="icon" aria-hidden="true">🚀</span>
+          <h3>MIS APPS</h3>
+          <p>Tus proyectos en línea, con su estado.</p>
+        </button>
       </nav>
 
-      <section class="desk-apps" aria-labelledby="apps-titulo">
-        <h2 id="apps-titulo">Mis apps</h2>
-        <ul class="desk-apps-list">
-          <li><a href="https://sql.smarteksoft.com" target="_blank" rel="noopener">
-            <span class="desk-app-name">Bases de datos</span>
-            <span class="desk-app-host">sql.smarteksoft.com</span>
-          </a></li>
-          <li><a href="https://raee.smarteksoft.com" target="_blank" rel="noopener">
-            <span class="desk-app-name">RAEE</span>
-            <span class="desk-app-host">raee.smarteksoft.com</span>
-          </a></li>
-          <li><a href="https://soporte.smarteksoft.com" target="_blank" rel="noopener">
-            <span class="desk-app-name">Soporte</span>
-            <span class="desk-app-host">soporte.smarteksoft.com</span>
-          </a></li>
-          <li><a href="https://tucultura.smarteksoft.com" target="_blank" rel="noopener">
-            <span class="desk-app-name">Tu Cultura</span>
-            <span class="desk-app-host">tucultura.smarteksoft.com</span>
-          </a></li>
-        </ul>
-      </section>
+      <p id="sys-line" class="sys-line" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- MIS APPS -->
+  <section id="apps-screen" class="pantalla screen-hidden">
+    <button id="btn-cerrar-sesion-apps" class="logout-link" type="button">Salir</button>
+    <div class="welcome-container">
+      <header>
+        <h1>MIS <span class="highlight">APPS</span></h1>
+        <p class="author">Proyectos publicados en smarteksoft.com</p>
+      </header>
+
+      <nav class="options options-apps" aria-label="Apps">
+        <a class="card" data-app="sql" href="https://sql.smarteksoft.com" target="_blank" rel="noopener">
+          <span class="icon" aria-hidden="true">🗄️</span>
+          <h3>BASES DE DATOS</h3>
+          <p class="app-host">sql.smarteksoft.com</p>
+          <span class="app-status"><i class="dot" aria-hidden="true"></i><span class="app-status-texto">comprobando…</span></span>
+        </a>
+        <a class="card" data-app="raee" href="https://raee.smarteksoft.com" target="_blank" rel="noopener">
+          <span class="icon" aria-hidden="true">♻️</span>
+          <h3>RAEE</h3>
+          <p class="app-host">raee.smarteksoft.com</p>
+          <span class="app-status"><i class="dot" aria-hidden="true"></i><span class="app-status-texto">comprobando…</span></span>
+        </a>
+        <a class="card" data-app="soporte" href="https://soporte.smarteksoft.com" target="_blank" rel="noopener">
+          <span class="icon" aria-hidden="true">🛠️</span>
+          <h3>SOPORTE</h3>
+          <p class="app-host">soporte.smarteksoft.com</p>
+          <span class="app-status"><i class="dot" aria-hidden="true"></i><span class="app-status-texto">comprobando…</span></span>
+        </a>
+        <a class="card" data-app="tucultura" href="https://tucultura.smarteksoft.com" target="_blank" rel="noopener">
+          <span class="icon" aria-hidden="true">🛒</span>
+          <h3>TU CULTURA</h3>
+          <p class="app-host">tucultura.smarteksoft.com</p>
+          <span class="app-status"><i class="dot" aria-hidden="true"></i><span class="app-status-texto">comprobando…</span></span>
+        </a>
+      </nav>
+
+      <button id="btn-volver-home-apps" class="home-btn" type="button" aria-label="Volver al inicio">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10L12 3L21 10V21H14V14H10V21H3Z" /></svg>
+      </button>
     </div>
   </section>
 
@@ -146,31 +168,47 @@
     </div>
   </section>
 
-  <!-- Portada: pantalla completa mientras no hay sesión -->
-  <div id="login-modal" class="gate hidden" role="dialog" aria-modal="true" aria-labelledby="gate-title">
-    <header class="gate-bar">
-      <span class="wordmark">SmartekSoft</span>
-      <span class="gate-private">Acceso privado</span>
-    </header>
+  <!-- ACCESO RESTRINGIDO: pantalla completa mientras no hay sesión -->
+  <div id="login-modal" class="pantalla hidden" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <div class="admin-container">
+      <form id="form-login" class="admin-box" autocomplete="on" novalidate>
+        <div class="admin-icon" aria-hidden="true">👤🔒</div>
+        <h2 id="gate-title">Acceso Restringido</h2>
+        <p>Ingresa tu usuario y contraseña para entrar a SmartekSoft.</p>
 
-    <div class="gate-body">
-      <h1 id="gate-title" class="gate-name"><span>Smartek</span><span>Soft</span></h1>
+        <label for="in-usuario">USUARIO</label>
+        <div class="input-group">
+          <input id="in-usuario" name="usuario" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+        </div>
 
-      <div class="gate-access">
-        <h2>Entra a tu espacio</h2>
-        <p>Tips, clases y herramientas en un solo lugar. Inicia sesión con tu cuenta de Google.</p>
-        <div id="google-signin-button" aria-label="Iniciar sesion con Google"></div>
+        <label for="in-clave">CONTRASEÑA</label>
+        <div class="input-group">
+          <input id="in-clave" name="contrasena" type="password" autocomplete="current-password" required />
+          <button id="btn-ver-clave" class="toggle-pass" type="button" aria-label="Mostrar contraseña" aria-pressed="false">👁</button>
+        </div>
+
         <p id="login-error" class="login-error" role="alert"></p>
-        <p class="gate-note">Los permisos dependen del rol asignado a tu cuenta.</p>
-      </div>
+        <button id="btn-entrar" class="btn-acceder" type="submit">Acceder</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Paleta de comandos (Ctrl + K) -->
+  <div id="paleta" class="palette hidden" role="dialog" aria-modal="true" aria-label="Buscar o ejecutar">
+    <div class="palette-box">
+      <label class="palette-input">
+        <span aria-hidden="true">&gt;_</span>
+        <input id="paleta-input" type="text" placeholder="Escribe un comando: tips, drive, sql…" autocomplete="off" spellcheck="false" />
+      </label>
+      <ul id="paleta-lista" class="palette-list" role="listbox"></ul>
+      <p class="palette-hint">↑ ↓ moverse · Enter ejecutar · Esc cerrar</p>
     </div>
   </div>
 
   <!-- Marked.js para renderizar Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async></script>
-  <script src="js/app.js?v=20261122-01" type="module" defer></script>
+  <script src="js/app.js?v=20261122-03" type="module" defer></script>
 </body>
 
 </html>

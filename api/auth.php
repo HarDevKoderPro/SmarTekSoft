@@ -3,15 +3,22 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/sesion.php';
 
+// Freno a intentos de ingreso (igual que el curso de bases de datos):
+// 10 fallos por IP cada 15 minutos, y 20 por usuario para frenar ataques repartidos.
+const MAX_FALLOS_IP = 10;
+const MAX_FALLOS_USUARIO = 20;
+const VENTANA_MINUTOS = 15;
+
+// Hash bcrypt bien formado que no corresponde a ninguna contraseña: se verifica
+// cuando el usuario no existe para que la respuesta tarde lo mismo.
+const HASH_FALSO = '$2y$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
+
 iniciarSesionSegura();
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 try {
     if ($metodo === 'GET') {
-        responderJSON(200, true, [
-            'usuario' => obtenerUsuarioSesion(),
-            'google_client_id' => GOOGLE_CLIENT_ID,
-        ], 'Estado de sesion obtenido.');
+        responderJSON(200, true, ['usuario' => obtenerUsuarioSesion()], 'Estado de sesion obtenido.');
     }
 
     if ($metodo !== 'POST') {
@@ -23,103 +30,101 @@ try {
         responderJSON(400, false, null, 'El cuerpo de la peticion debe ser JSON valido.');
     }
 
-    if (($datos['accion'] ?? '') === 'google_login') {
-        iniciarSesionGoogle($datos);
+    $accion = $datos['accion'] ?? '';
+    if ($accion === 'login') {
+        iniciarSesionConClave($datos);
     }
-    if (($datos['accion'] ?? '') === 'logout') {
+    if ($accion === 'logout') {
         cerrarSesion();
     }
     responderJSON(400, false, null, 'La accion solicitada no es valida.');
 } catch (PDOException $e) {
-    error_log('PIA Auth DB Error: ' . $e->getMessage());
+    error_log('SmartekSoft Auth DB Error: ' . $e->getMessage());
     responderJSON(500, false, null, 'Error interno del servidor.');
 }
 
-function iniciarSesionGoogle(array $datos): void
+function ipCliente(): string
 {
-    if (GOOGLE_CLIENT_ID === '') {
-        responderJSON(503, false, null, 'El acceso con Google aun no esta configurado.');
+    // Caddy reemplaza X-Forwarded-For con la IP real; sin proxy se usa REMOTE_ADDR.
+    $candidata = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')[0]);
+    if ($candidata !== '' && filter_var($candidata, FILTER_VALIDATE_IP)) {
+        return $candidata;
     }
-    $credencial = trim((string) ($datos['credential'] ?? ''));
-    if ($credencial === '') {
-        responderJSON(400, false, null, 'Google no entrego una credencial valida.');
-    }
+    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+}
 
-    $respuesta = consultarTokenGoogle($credencial);
-    if (!$respuesta || ($respuesta['aud'] ?? '') !== GOOGLE_CLIENT_ID || !in_array($respuesta['iss'] ?? '', ['accounts.google.com', 'https://accounts.google.com'], true) || !in_array($respuesta['email_verified'] ?? '', [true, 'true', '1', 1], true) || (int) ($respuesta['exp'] ?? 0) <= time()) {
-        responderJSON(401, false, null, 'No fue posible validar la identidad de Google.');
-    }
+function asegurarTablaIntentos(PDO $db): void
+{
+    $db->exec('CREATE TABLE IF NOT EXISTS intentos_login (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        ip VARCHAR(45) NOT NULL,
+        usuario VARCHAR(100) NOT NULL,
+        creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY idx_intentos_ip (ip, creado),
+        KEY idx_intentos_usuario (usuario, creado)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+}
 
-    $sub = trim((string) ($respuesta['sub'] ?? ''));
-    $correo = validarCorreoGoogle($respuesta['email'] ?? '');
-    $nombre = trim((string) ($respuesta['name'] ?? $correo));
-    if ($sub === '' || $nombre === '' || mb_strlen($nombre) > 150) {
-        responderJSON(401, false, null, 'La identidad de Google esta incompleta.');
+function demasiadosFallos(PDO $db, string $ip, string $usuario): bool
+{
+    $stmt = $db->prepare('SELECT
+        SUM(ip = :ip) AS por_ip,
+        SUM(usuario = :usuario) AS por_usuario
+        FROM intentos_login WHERE creado > (NOW() - INTERVAL ' . VENTANA_MINUTOS . ' MINUTE)');
+    $stmt->execute([':ip' => $ip, ':usuario' => $usuario]);
+    $fila = $stmt->fetch();
+    return (int) ($fila['por_ip'] ?? 0) >= MAX_FALLOS_IP || (int) ($fila['por_usuario'] ?? 0) >= MAX_FALLOS_USUARIO;
+}
+
+function registrarFallo(PDO $db, string $ip, string $usuario): void
+{
+    $stmt = $db->prepare('INSERT INTO intentos_login (ip, usuario) VALUES (:ip, :usuario)');
+    $stmt->execute([':ip' => $ip, ':usuario' => mb_substr($usuario, 0, 100)]);
+    // Limpieza ocasional de registros viejos.
+    if (random_int(1, 20) === 1) {
+        $db->exec('DELETE FROM intentos_login WHERE creado < (NOW() - INTERVAL 1 DAY)');
+    }
+}
+
+function iniciarSesionConClave(array $datos): void
+{
+    $usuario = trim((string) ($datos['usuario'] ?? ''));
+    $clave = (string) ($datos['contrasena'] ?? '');
+    if ($usuario === '' || $clave === '' || mb_strlen($usuario) > 255 || strlen($clave) > 200) {
+        responderJSON(400, false, null, 'Escribe tu usuario y tu contraseña.');
     }
 
     $db = obtenerConexion();
-    $db->beginTransaction();
-    try {
-        $stmt = $db->prepare('SELECT usuario_id FROM identidades_usuario WHERE proveedor = :proveedor AND identificador_proveedor = :identificador LIMIT 1');
-        $stmt->execute([':proveedor' => 'google', ':identificador' => $sub]);
-        $usuarioId = $stmt->fetchColumn();
+    asegurarTablaIntentos($db);
+    $ip = ipCliente();
 
-        if (!$usuarioId) {
-            $stmt = $db->prepare('SELECT id FROM usuarios WHERE correo = :correo LIMIT 1');
-            $stmt->execute([':correo' => $correo]);
-            $usuarioId = $stmt->fetchColumn();
-        }
-        if (!$usuarioId) {
-            $usuarioGoogle = 'google_' . $sub;
-            $stmt = $db->prepare('INSERT INTO usuarios (usuario, correo, nombre_mostrado, contrasena_hash) VALUES (:usuario, :correo, :nombre, NULL)');
-            $stmt->execute([':usuario' => $usuarioGoogle, ':correo' => $correo, ':nombre' => $nombre]);
-            $usuarioId = (int) $db->lastInsertId();
-        } else {
-            $stmt = $db->prepare('UPDATE usuarios SET correo = :correo, nombre_mostrado = :nombre, activo = 1 WHERE id = :id');
-            $stmt->execute([':correo' => $correo, ':nombre' => $nombre, ':id' => $usuarioId]);
-        }
-
-        $stmt = $db->prepare('INSERT IGNORE INTO identidades_usuario (usuario_id, proveedor, identificador_proveedor, correo_proveedor) VALUES (:usuario_id, :proveedor, :identificador, :correo)');
-        $stmt->execute([':usuario_id' => $usuarioId, ':proveedor' => 'google', ':identificador' => $sub, ':correo' => $correo]);
-
-        $rol = strtolower($correo) === 'hardevkoder@gmail.com' ? 'admin' : 'invitado';
-        $stmt = $db->prepare('SELECT id FROM roles WHERE nombre = :nombre LIMIT 1');
-        $stmt->execute([':nombre' => $rol]);
-        $rolId = $stmt->fetchColumn();
-        if (!$rolId) {
-            throw new RuntimeException("El rol $rol no existe.");
-        }
-        // Cada acceso Google recibe el rol determinado por la cuenta autenticada.
-        $stmt = $db->prepare('DELETE ur FROM usuarios_roles ur INNER JOIN roles r ON r.id = ur.rol_id WHERE ur.usuario_id = :usuario_id AND r.nombre != :rol');
-        $stmt->execute([':usuario_id' => $usuarioId, ':rol' => $rol]);
-        $stmt = $db->prepare('INSERT IGNORE INTO usuarios_roles (usuario_id, rol_id) VALUES (:usuario_id, :rol_id)');
-        $stmt->execute([':usuario_id' => $usuarioId, ':rol_id' => $rolId]);
-        $db->commit();
-    } catch (Throwable $e) {
-        $db->rollBack();
-        throw $e;
+    if (demasiadosFallos($db, $ip, mb_strtolower($usuario))) {
+        responderJSON(429, false, null, 'Demasiados intentos. Espera ' . VENTANA_MINUTOS . ' minutos e intenta de nuevo.');
     }
 
-    guardarUsuarioSesion((int) $usuarioId);
-    responderJSON(200, true, obtenerUsuarioSesion(), 'Inicio de sesion con Google realizado.');
-}
+    $stmt = $db->prepare('SELECT id, contrasena_hash FROM usuarios WHERE (usuario = :u OR correo = :u) AND activo = 1 LIMIT 1');
+    $stmt->execute([':u' => $usuario]);
+    $fila = $stmt->fetch();
 
-function consultarTokenGoogle(string $credencial): ?array
-{
-    $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . rawurlencode($credencial);
-    $contexto = stream_context_create(['http' => ['timeout' => 10, 'ignore_errors' => true]]);
-    $resultado = @file_get_contents($url, false, $contexto);
-    $datos = is_string($resultado) ? json_decode($resultado, true) : null;
-    return is_array($datos) ? $datos : null;
-}
+    $hash = ($fila && is_string($fila['contrasena_hash']) && $fila['contrasena_hash'] !== '') ? $fila['contrasena_hash'] : HASH_FALSO;
+    $valida = password_verify($clave, $hash);
 
-function validarCorreoGoogle($valor): string
-{
-    $correo = trim((string) $valor);
-    if (!filter_var($correo, FILTER_VALIDATE_EMAIL) || mb_strlen($correo) > 255) {
-        responderJSON(401, false, null, 'Google no entrego un correo valido.');
+    if (!$fila || $hash === HASH_FALSO || !$valida) {
+        registrarFallo($db, $ip, mb_strtolower($usuario));
+        responderJSON(401, false, null, 'Usuario o contraseña incorrectos.');
     }
-    return $correo;
+
+    $stmt = $db->prepare('DELETE FROM intentos_login WHERE ip = :ip');
+    $stmt->execute([':ip' => $ip]);
+
+    if (password_needs_rehash($fila['contrasena_hash'], PASSWORD_DEFAULT)) {
+        $stmt = $db->prepare('UPDATE usuarios SET contrasena_hash = :h WHERE id = :id');
+        $stmt->execute([':h' => password_hash($clave, PASSWORD_DEFAULT), ':id' => $fila['id']]);
+    }
+
+    guardarUsuarioSesion((int) $fila['id']);
+    responderJSON(200, true, obtenerUsuarioSesion(), 'Inicio de sesion realizado.');
 }
 
 function cerrarSesion(): void
