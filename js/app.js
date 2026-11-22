@@ -1,6 +1,6 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-20";
+import { iniciarMatrix } from "./efectos.js?v=20261122-21";
 
-const VERSION = "20261122-20";
+const VERSION = "20261122-21";
 const routes = {
   home: document.getElementById("home-screen"),
   clases: document.getElementById("clases-screen"),
@@ -222,6 +222,15 @@ async function copiarCodigo() {
 // Si el navegador puede ocultar el texto con CSS, el campo es de texto normal (sin sugerencias).
 const ocultaConCss = window.CSS?.supports?.("-webkit-text-security", "disc") ?? false;
 
+// Solo lectura hasta que el usuario toca el campo: el navegador y los gestores de claves no lo rellenan.
+function bloquearRelleno(idCampo) {
+  const el = $(idCampo);
+  el.readOnly = true;
+  const activar = () => { el.readOnly = false; };
+  el.addEventListener("keydown", activar, { once: true });
+  el.addEventListener("pointerdown", activar, { once: true });
+}
+
 function nombreAlAzar() {
   return `f${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -229,7 +238,6 @@ function nombreAlAzar() {
 function prepararCampoSecreto(idCampo) {
   const campoClave = $(idCampo);
   campoClave.name = nombreAlAzar();
-  campoClave.setAttribute("autocomplete", "off");
   campoClave.setAttribute("autocorrect", "off");
   campoClave.setAttribute("autocapitalize", "none");
   campoClave.setAttribute("spellcheck", "false");
@@ -380,7 +388,9 @@ function configurarNavegacion() {
   $("btn-volver-home-clases").addEventListener("click", () => navegar("home"));
   $("btn-cerrar-sesion-home").addEventListener("click", cerrarSesion);
   $("in-codigo").name = nombreAlAzar();
-  $("in-codigo").setAttribute("autocomplete", "off");
+  bloquearRelleno("in-codigo");
+  bloquearRelleno("in-clave");
+  bloquearRelleno("in-clave-nueva");
   prepararCampoSecreto("in-clave");
   prepararCampoSecreto("in-clave-nueva");
   $("btn-ver-clave").addEventListener("click", () => alternarClave("in-clave", "btn-ver-clave"));
