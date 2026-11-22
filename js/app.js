@@ -1,6 +1,6 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-18";
+import { iniciarMatrix } from "./efectos.js?v=20261122-19";
 
-const VERSION = "20261122-18";
+const VERSION = "20261122-19";
 const routes = {
   home: document.getElementById("home-screen"),
   clases: document.getElementById("clases-screen"),
@@ -219,10 +219,27 @@ async function copiarCodigo() {
   }
 }
 
+// Los navegadores ignoran autocomplete="off" en campos de contraseña y muestran sugerencias.
+// Si el navegador puede ocultar el texto con CSS, el campo es de texto normal (sin sugerencias).
+const ocultaConCss = window.CSS?.supports?.("-webkit-text-security", "disc") ?? false;
+
+function prepararCampoSecreto(idCampo) {
+  const campoClave = $(idCampo);
+  campoClave.setAttribute("autocomplete", "off");
+  campoClave.setAttribute("autocorrect", "off");
+  campoClave.setAttribute("autocapitalize", "none");
+  campoClave.setAttribute("spellcheck", "false");
+  if (ocultaConCss) {
+    campoClave.type = "text";
+    campoClave.classList.add("secreto");
+  }
+}
+
 function alternarClave(idCampo, idBoton) {
   const campoClave = $(idCampo);
-  const visible = campoClave.type === "password";
-  campoClave.type = visible ? "text" : "password";
+  const visible = ocultaConCss ? campoClave.classList.contains("secreto") : campoClave.type === "password";
+  if (ocultaConCss) campoClave.classList.toggle("secreto", !visible);
+  else campoClave.type = visible ? "text" : "password";
   $(idBoton).setAttribute("aria-pressed", String(visible));
   $(idBoton).setAttribute("aria-label", visible ? "Ocultar clave" : "Mostrar clave");
 }
@@ -361,6 +378,8 @@ function configurarNavegacion() {
   $("btn-cerrar-sesion-home").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-apps").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-clases").addEventListener("click", cerrarSesion);
+  prepararCampoSecreto("in-clave");
+  prepararCampoSecreto("in-clave-nueva");
   $("btn-ver-clave").addEventListener("click", () => alternarClave("in-clave", "btn-ver-clave"));
   $("btn-ver-clave-nueva").addEventListener("click", () => alternarClave("in-clave-nueva", "btn-ver-clave-nueva"));
   $("form-login").addEventListener("submit", enviarAcceso);

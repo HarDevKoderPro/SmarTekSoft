@@ -281,7 +281,9 @@ input:focus-visible {
   outline: none;
 }
 .input-group input:focus { border-color: var(--azul); }
+.input-group input.secreto { -webkit-text-security: disc; text-security: disc; }
 .input-group input[type="password"],
+.input-group input.secreto,
 .input-group input.con-ojo { padding-right: 38px; }
 
 .toggle-pass {
