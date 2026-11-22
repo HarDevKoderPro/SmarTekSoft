@@ -49,7 +49,7 @@ BuscaTips/
 |- .env.example
 |- css/style.css
 |- fonts/openSans.ttf
-|- images/code.ico
+|- images/favicon.svg, favicon.ico, favicon-32.png, apple-touch-icon.png (letra "S" blanca sobre azul)
 |- index.html
 |- privacy.html
 |- terms.html
@@ -426,4 +426,5 @@ Checklist minimo por cambio:
 - 2026-10-10: Inicio automático de Google verificado en producción (pendiente 6 cerrado). Migración a VPS con despliegue continuo completada.
 - 2026-10-10: Retiro de PIA de Colombia Hosting: contraseña de cPanel cambiada, base `tucultur_buscatips_db`, archivos y subdominio `digitalbrain.girabienes.com` eliminados, y acceso MySQL remoto `%.%.%.%` retirado (pendiente 7 cerrado).
 - 2026-10-10: Llave de despliegue regenerada (`github-actions-deploy-2026-10-10b`), actualizado `VPS_SSH_KEY` y retiradas las llaves anteriores del VPS (pendiente 8 cerrado).
+- 2026-11-22: Nuevo favicon de SmartekSoft (letra "S" blanca gruesa sobre fondo azul degradado, a sangre completa para que destaque): `favicon.svg`, `favicon.ico`, `favicon-32.png` y `apple-touch-icon.png` reemplazan a `code.ico`.
 - 2026-10-10: Se descartan las alertas de respaldo y se cierra la etapa de migración a VPS; los próximos cambios son nuevas funcionalidades.

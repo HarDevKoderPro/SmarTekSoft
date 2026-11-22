@@ -173,7 +173,7 @@ BuscaTips/
 ├── fonts/
 │   └── openSans.ttf            # 🔤 Fuente Open Sans embebida
 ├── images/
-│   └── code.ico                # 🖼️ Favicon de la aplicación
+│   └── favicon.svg / .ico / -32.png, apple-touch-icon.png  # 🖼️ Favicon de la aplicación
 ├── js/
 │   ├── libreria.js             # 📚 Módulo principal - API calls, cache, búsqueda, renderizado
 │   └── script.js               # 🎮 Orquestador de UI - Eventos, DOM, flujo de la app
