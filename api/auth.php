@@ -103,8 +103,8 @@ function iniciarSesionConClave(array $datos): void
         responderJSON(429, false, null, 'Demasiados intentos. Espera ' . VENTANA_MINUTOS . ' minutos e intenta de nuevo.');
     }
 
-    $stmt = $db->prepare('SELECT id, contrasena_hash FROM usuarios WHERE (usuario = :u OR correo = :u) AND activo = 1 LIMIT 1');
-    $stmt->execute([':u' => $usuario]);
+    $stmt = $db->prepare('SELECT id, contrasena_hash FROM usuarios WHERE (usuario = :usuario OR correo = :correo) AND activo = 1 LIMIT 1');
+    $stmt->execute([':usuario' => $usuario, ':correo' => $usuario]);
     $fila = $stmt->fetch();
 
     $hash = ($fila && is_string($fila['contrasena_hash']) && $fila['contrasena_hash'] !== '') ? $fila['contrasena_hash'] : HASH_FALSO;
