@@ -91,7 +91,7 @@ input:focus-visible {
 .card {
   width: 180px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--azul);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
@@ -110,7 +110,7 @@ input:focus-visible {
   background: rgba(255, 255, 255, 0.1);
 }
 .card-soon { cursor: default; opacity: 0.55; }
-.card-soon:hover { transform: none; border-color: rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); }
+.card-soon:hover { transform: none; border-color: var(--azul); background: rgba(255, 255, 255, 0.05); }
 
 .options-apps { max-width: 960px; }
 .options-apps .card { width: 215px; }
