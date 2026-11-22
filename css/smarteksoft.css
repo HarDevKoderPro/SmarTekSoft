@@ -309,11 +309,11 @@ input:focus-visible {
   .welcome-container h1 { font-size: 1.6rem; }
   .options { gap: 12px; }
   .options { gap: 10px; }
-  .card { width: calc(33.333% - 7px); min-width: 0; padding: 14px 4px; border-radius: 10px; }
+  .card { flex: none; width: calc((100vw - 60px) / 3); min-width: 0; padding: 14px 4px; border-radius: 10px; }
   .card .icon { margin-bottom: 8px; }
   .card .icon svg { width: 34px; height: 34px; }
   .card h3 { font-size: 0.68rem; letter-spacing: 0; }
-  .options-apps .card { width: calc(50% - 5px); padding: 14px 8px; }
+  .options-apps .card { width: calc((100vw - 50px) / 2); padding: 14px 8px; }
   .options-apps .card h3 { font-size: 0.78rem; }
   .app-host,
   .app-status { display: none; }
