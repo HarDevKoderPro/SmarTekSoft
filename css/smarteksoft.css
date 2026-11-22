@@ -315,8 +315,8 @@ input:focus-visible {
   .card h3 { font-size: 0.68rem; letter-spacing: 0; }
   .options-apps .card { width: calc(50% - 5px); padding: 14px 8px; }
   .options-apps .card h3 { font-size: 0.78rem; }
-  .app-host { font-size: 0.65rem !important; }
-  .app-status { margin-top: 6px; font-size: 0.68rem; }
+  .app-host,
+  .app-status { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
