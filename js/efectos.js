@@ -1,7 +1,7 @@
 // Fondo "lluvia de código" de SmartekSoft (mismo efecto que Mini Editor Web).
 // Sin dependencias: se pausa cuando la pestaña está oculta o la pantalla no lo necesita.
 
-const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reducido = false; // la lluvia en movimiento es parte del diseño
 const ALFABETO = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const TAMANO = 16;
 const FPS = 30;
