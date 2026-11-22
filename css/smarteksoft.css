@@ -75,7 +75,8 @@ input:focus-visible {
   letter-spacing: 2px;
   color: #fff;
 }
-.highlight { color: var(--azul); }
+.highlight,
+.welcome-container h1.highlight { color: var(--azul); }
 .author { margin: 10px 0 40px; color: var(--gris); font-size: 0.8rem; }
 
 /* Tarjetas */
