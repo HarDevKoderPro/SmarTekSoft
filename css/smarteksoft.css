@@ -151,9 +151,6 @@ input:focus-visible {
 .card[data-app]:not([data-estado]) .dot { animation: parpadeo 1.2s steps(1) infinite; }
 @keyframes parpadeo { 50% { opacity: 0.2; } }
 
-.sys-line { margin-top: 28px; font-size: 0.75rem; color: var(--gris); min-height: 1.2em; }
-.sys-line .ok { color: var(--verde); }
-
 .logout-link {
   position: fixed;
   top: 16px;
@@ -212,7 +209,55 @@ input:focus-visible {
   80% { transform: translateX(3px); }
 }
 
-.admin-icon { margin-bottom: 15px; font-size: 2rem; }
+.acceso-icono {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 22px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--azul);
+  border-radius: 50%;
+  background: rgba(74, 144, 226, 0.08);
+  box-shadow: 0 0 22px rgba(74, 144, 226, 0.35);
+}
+.acceso-icono svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: var(--azul);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(74, 144, 226, 0.6));
+}
+.toggle-pass svg { width: 20px; height: 20px; display: block; fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.link-acceso {
+  display: block;
+  margin: 16px auto 0;
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  color: #888;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.link-acceso:hover { color: var(--azul); }
+
+.codigo-recuperacion {
+  margin: 4px 0 8px;
+  padding: 14px 8px;
+  border: 1px dashed var(--azul);
+  border-radius: 8px;
+  background: #1a1a1a;
+  color: #fff;
+  font: 700 1.05rem Consolas, "Courier New", monospace;
+  letter-spacing: 1px;
+  user-select: all;
+  overflow-wrap: anywhere;
+}
 .admin-box h2 { margin-bottom: 10px; }
 .admin-box p { margin-bottom: 20px; font-size: 0.85rem; color: #888; }
 

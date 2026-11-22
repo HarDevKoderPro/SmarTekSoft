@@ -2,16 +2,13 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/sesion.php';
+require_once __DIR__ . '/clave_maestra.php';
 
-// Freno a intentos de ingreso (igual que el curso de bases de datos):
-// 10 fallos por IP cada 15 minutos, y 20 por usuario para frenar ataques repartidos.
+// Freno a intentos de ingreso: 10 fallos por IP cada 15 minutos,
+// y 20 por tipo de intento (clave maestra / recuperacion) para frenar ataques repartidos.
 const MAX_FALLOS_IP = 10;
 const MAX_FALLOS_USUARIO = 20;
 const VENTANA_MINUTOS = 15;
-
-// Hash bcrypt bien formado que no corresponde a ninguna contraseña: se verifica
-// cuando el usuario no existe para que la respuesta tarde lo mismo.
-const HASH_FALSO = '$2y$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
 
 iniciarSesionSegura();
 $metodo = $_SERVER['REQUEST_METHOD'];
@@ -33,6 +30,9 @@ try {
     $accion = $datos['accion'] ?? '';
     if ($accion === 'login') {
         iniciarSesionConClave($datos);
+    }
+    if ($accion === 'recuperar') {
+        recuperarClave($datos);
     }
     if ($accion === 'logout') {
         cerrarSesion();
@@ -89,42 +89,78 @@ function registrarFallo(PDO $db, string $ip, string $usuario): void
 
 function iniciarSesionConClave(array $datos): void
 {
-    $usuario = trim((string) ($datos['usuario'] ?? ''));
-    $clave = (string) ($datos['contrasena'] ?? '');
-    if ($usuario === '' || $clave === '' || mb_strlen($usuario) > 255 || strlen($clave) > 200) {
-        responderJSON(400, false, null, 'Escribe tu usuario y tu contraseña.');
+    $clave = (string) ($datos['clave'] ?? '');
+    if ($clave === '' || strlen($clave) > 200) {
+        responderJSON(400, false, null, 'Escribe la clave maestra.');
     }
 
     $db = obtenerConexion();
     asegurarTablaIntentos($db);
     $ip = ipCliente();
 
-    if (demasiadosFallos($db, $ip, mb_strtolower($usuario))) {
+    if (demasiadosFallos($db, $ip, 'maestra')) {
         responderJSON(429, false, null, 'Demasiados intentos. Espera ' . VENTANA_MINUTOS . ' minutos e intenta de nuevo.');
     }
 
-    $stmt = $db->prepare('SELECT id, contrasena_hash FROM usuarios WHERE (usuario = :usuario OR correo = :correo) AND activo = 1 LIMIT 1');
-    $stmt->execute([':usuario' => $usuario, ':correo' => $usuario]);
-    $fila = $stmt->fetch();
+    $acceso = obtenerAccesoMaestro($db);
+    if (!$acceso) {
+        responderJSON(503, false, null, 'La clave maestra aun no esta configurada en el servidor.');
+    }
 
-    $hash = ($fila && is_string($fila['contrasena_hash']) && $fila['contrasena_hash'] !== '') ? $fila['contrasena_hash'] : HASH_FALSO;
-    $valida = password_verify($clave, $hash);
+    if (!password_verify($clave, $acceso['clave_hash'])) {
+        registrarFallo($db, $ip, 'maestra');
+        responderJSON(401, false, null, 'Clave incorrecta.');
+    }
 
-    if (!$fila || $hash === HASH_FALSO || !$valida) {
-        registrarFallo($db, $ip, mb_strtolower($usuario));
-        responderJSON(401, false, null, 'Usuario o contraseña incorrectos.');
+    $adminId = idAdministrador($db);
+    if (!$adminId) {
+        responderJSON(500, false, null, 'No hay un administrador activo para abrir la sesion.');
     }
 
     $stmt = $db->prepare('DELETE FROM intentos_login WHERE ip = :ip');
     $stmt->execute([':ip' => $ip]);
 
-    if (password_needs_rehash($fila['contrasena_hash'], PASSWORD_DEFAULT)) {
-        $stmt = $db->prepare('UPDATE usuarios SET contrasena_hash = :h WHERE id = :id');
-        $stmt->execute([':h' => password_hash($clave, PASSWORD_DEFAULT), ':id' => $fila['id']]);
+    guardarUsuarioSesion($adminId);
+    responderJSON(200, true, obtenerUsuarioSesion(), 'Inicio de sesion realizado.');
+}
+
+// "Olvide mi clave": con el codigo de recuperacion se define una clave nueva y se entrega un codigo nuevo.
+function recuperarClave(array $datos): void
+{
+    $codigo = normalizarCodigo((string) ($datos['codigo'] ?? ''));
+    $nueva = (string) ($datos['clave_nueva'] ?? '');
+    if ($codigo === '' || strlen($codigo) > 64) {
+        responderJSON(400, false, null, 'Escribe tu codigo de recuperacion.');
+    }
+    if (mb_strlen($nueva) < LARGO_MINIMO_CLAVE || strlen($nueva) > 200) {
+        responderJSON(400, false, null, 'La clave nueva debe tener al menos ' . LARGO_MINIMO_CLAVE . ' caracteres.');
     }
 
-    guardarUsuarioSesion((int) $fila['id']);
-    responderJSON(200, true, obtenerUsuarioSesion(), 'Inicio de sesion realizado.');
+    $db = obtenerConexion();
+    asegurarTablaIntentos($db);
+    $ip = ipCliente();
+
+    if (demasiadosFallos($db, $ip, 'recuperacion')) {
+        responderJSON(429, false, null, 'Demasiados intentos. Espera ' . VENTANA_MINUTOS . ' minutos e intenta de nuevo.');
+    }
+
+    $acceso = obtenerAccesoMaestro($db);
+    if (!$acceso || !password_verify($codigo, $acceso['recuperacion_hash'])) {
+        registrarFallo($db, $ip, 'recuperacion');
+        responderJSON(401, false, null, 'Codigo de recuperacion incorrecto.');
+    }
+
+    $adminId = idAdministrador($db);
+    if (!$adminId) {
+        responderJSON(500, false, null, 'No hay un administrador activo para abrir la sesion.');
+    }
+
+    $codigoNuevo = guardarClaveMaestra($db, $nueva);
+    $stmt = $db->prepare('DELETE FROM intentos_login WHERE ip = :ip');
+    $stmt->execute([':ip' => $ip]);
+
+    guardarUsuarioSesion($adminId);
+    responderJSON(200, true, ['usuario' => obtenerUsuarioSesion(), 'codigo_recuperacion' => $codigoNuevo], 'Clave restablecida.');
 }
 
 function cerrarSesion(): void

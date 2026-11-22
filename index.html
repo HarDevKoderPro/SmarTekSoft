@@ -9,8 +9,8 @@
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#000000" />
   <title>SmartekSoft</title>
-  <link rel="stylesheet" href="css/style.css?v=20261122-15" />
-  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-15" />
+  <link rel="stylesheet" href="css/style.css?v=20261122-17" />
+  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-17" />
   <link rel="shortcut icon" href="./images/code.ico" type="image/x-icon" />
 </head>
 
@@ -55,8 +55,6 @@
           <h3>MIS APPS</h3>
         </button>
       </nav>
-
-      <p id="sys-line" class="sys-line" aria-live="polite"></p>
     </div>
   </section>
 
@@ -183,25 +181,55 @@
   <!-- ACCESO RESTRINGIDO: pantalla completa mientras no hay sesión -->
   <div id="login-modal" class="pantalla hidden" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <div class="admin-container">
-      <form id="form-login" class="admin-box" autocomplete="on" novalidate>
-        <div class="admin-icon" aria-hidden="true">👤🔒</div>
-        <h2 id="gate-title">Acceso Restringido</h2>
-        <p>Ingresa tu usuario y contraseña para entrar a SmartekSoft.</p>
+      <div class="admin-box">
+        <div class="acceso-icono" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div>
 
-        <label for="in-usuario">USUARIO</label>
-        <div class="input-group">
-          <input id="in-usuario" name="usuario" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+        <!-- Vista 1: clave maestra -->
+        <form id="form-login" autocomplete="off" novalidate>
+          <h2 id="gate-title">Acceso Restringido</h2>
+          <p>Ingresa la clave maestra para entrar a SmartekSoft.</p>
+
+          <label for="in-clave">CLAVE MAESTRA</label>
+          <div class="input-group">
+            <input id="in-clave" name="clave" type="password" autocomplete="current-password" required />
+            <button id="btn-ver-clave" class="toggle-pass" type="button" aria-label="Mostrar clave" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+
+          <p id="login-error" class="login-error" role="alert"></p>
+          <button id="btn-entrar" class="btn-acceder" type="submit">Acceder</button>
+          <button id="btn-olvide" class="link-acceso" type="button">¿Olvidaste la contraseña?</button>
+        </form>
+
+        <!-- Vista 2: recuperación con el código -->
+        <form id="form-recuperar" autocomplete="off" novalidate hidden>
+          <h2>Recuperar acceso</h2>
+          <p>Escribe tu código de recuperación y define una clave maestra nueva.</p>
+
+          <label for="in-codigo">CÓDIGO DE RECUPERACIÓN</label>
+          <div class="input-group">
+            <input id="in-codigo" name="codigo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXX-XXXXX-XXXXX-XXXXX" required />
+          </div>
+
+          <label for="in-clave-nueva">CLAVE NUEVA (MÍNIMO 10 CARACTERES)</label>
+          <div class="input-group">
+            <input id="in-clave-nueva" name="clave_nueva" type="password" autocomplete="new-password" required />
+            <button id="btn-ver-clave-nueva" class="toggle-pass" type="button" aria-label="Mostrar clave" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+
+          <p id="recuperar-error" class="login-error" role="alert"></p>
+          <button id="btn-restablecer" class="btn-acceder" type="submit">Restablecer clave</button>
+          <button id="btn-volver-login" class="link-acceso" type="button">Volver</button>
+        </form>
+
+        <!-- Vista 3: código nuevo, se muestra una sola vez -->
+        <div id="vista-codigo" hidden>
+          <h2>Clave restablecida</h2>
+          <p>Guarda tu nuevo código de recuperación. El anterior ya no sirve y este no se vuelve a mostrar.</p>
+          <div id="codigo-nuevo" class="codigo-recuperacion"></div>
+          <button id="btn-copiar-codigo" class="link-acceso" type="button">Copiar código</button>
+          <button id="btn-continuar" class="btn-acceder" type="button">Ya lo guardé, entrar</button>
         </div>
-
-        <label for="in-clave">CONTRASEÑA</label>
-        <div class="input-group">
-          <input id="in-clave" name="contrasena" type="password" autocomplete="current-password" required />
-          <button id="btn-ver-clave" class="toggle-pass" type="button" aria-label="Mostrar contraseña" aria-pressed="false">👁</button>
-        </div>
-
-        <p id="login-error" class="login-error" role="alert"></p>
-        <button id="btn-entrar" class="btn-acceder" type="submit">Acceder</button>
-      </form>
+      </div>
     </div>
   </div>
 
@@ -220,7 +248,7 @@
   <!-- Marked.js para renderizar Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-  <script src="js/app.js?v=20261122-15" type="module" defer></script>
+  <script src="js/app.js?v=20261122-17" type="module" defer></script>
 </body>
 
 </html>

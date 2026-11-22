@@ -1,6 +1,6 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-15";
+import { iniciarMatrix } from "./efectos.js?v=20261122-17";
 
-const VERSION = "20261122-15";
+const VERSION = "20261122-17";
 const routes = {
   home: document.getElementById("home-screen"),
   clases: document.getElementById("clases-screen"),
@@ -101,45 +101,64 @@ function mostrarAcceso() {
   gate.classList.remove("hidden");
   campo.activar();
   $("login-error").textContent = "";
-  $("in-usuario").focus();
+  verVista("login");
+  $("in-clave").focus();
+}
+
+function sacudirCaja() {
+  const caja = document.querySelector("#login-modal .admin-box");
+  caja.classList.remove("sacudir");
+  void caja.offsetWidth; // reinicia la animación
+  caja.classList.add("sacudir");
+}
+
+function verVista(nombre) {
+  $("form-login").hidden = nombre !== "login";
+  $("form-recuperar").hidden = nombre !== "recuperar";
+  $("vista-codigo").hidden = nombre !== "codigo";
+  const foco = { login: "in-clave", recuperar: "in-codigo" }[nombre];
+  if (foco) $(foco).focus();
+}
+
+async function pedirAuth(cuerpo) {
+  const response = await fetch("api/auth.php", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo),
+  });
+  return response.json();
+}
+
+async function entrar(usuario) {
+  window.piaUsuario = usuario;
+  campo.pulso();
+  await new Promise((r) => setTimeout(r, 450));
+  actualizarInterfazSesion();
+  resolverRuta();
 }
 
 async function enviarAcceso(evento) {
   evento.preventDefault();
   const error = $("login-error");
   const boton = $("btn-entrar");
-  const usuario = $("in-usuario").value.trim();
   const clave = $("in-clave").value;
   error.textContent = "";
-  if (!usuario || !clave) {
-    error.textContent = "Escribe tu usuario y tu contraseña.";
+  if (!clave) {
+    error.textContent = "Escribe la clave maestra.";
     return;
   }
 
   boton.disabled = true;
   boton.textContent = "Verificando…";
   try {
-    const response = await fetch("api/auth.php", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accion: "login", usuario, contrasena: clave }),
-    });
-    const json = await response.json();
+    const json = await pedirAuth({ accion: "login", clave });
     if (!json.success || !json.data) {
       error.textContent = json.message || "No fue posible iniciar sesión.";
       $("in-clave").value = "";
       $("in-clave").focus();
-      const caja = $("form-login");
-      caja.classList.remove("sacudir");
-      void caja.offsetWidth; // reinicia la animación
-      caja.classList.add("sacudir");
+      sacudirCaja();
       return;
     }
-    window.piaUsuario = json.data;
     $("in-clave").value = "";
-    campo.pulso();
-    await new Promise((r) => setTimeout(r, 450));
-    actualizarInterfazSesion();
-    resolverRuta();
+    await entrar(json.data);
   } catch (errorRed) {
     console.error("Error al iniciar sesion:", errorRed);
     error.textContent = "No fue posible conectar con el servidor.";
@@ -149,37 +168,68 @@ async function enviarAcceso(evento) {
   }
 }
 
-function alternarClave() {
-  const campoClave = $("in-clave");
+let usuarioPendiente = null;
+
+async function enviarRecuperacion(evento) {
+  evento.preventDefault();
+  const error = $("recuperar-error");
+  const boton = $("btn-restablecer");
+  const codigo = $("in-codigo").value.trim();
+  const claveNueva = $("in-clave-nueva").value;
+  error.textContent = "";
+  if (!codigo || !claveNueva) {
+    error.textContent = "Completa el código y la clave nueva.";
+    return;
+  }
+  if (claveNueva.length < 10) {
+    error.textContent = "La clave nueva debe tener al menos 10 caracteres.";
+    return;
+  }
+
+  boton.disabled = true;
+  boton.textContent = "Verificando…";
+  try {
+    const json = await pedirAuth({ accion: "recuperar", codigo, clave_nueva: claveNueva });
+    if (!json.success || !json.data) {
+      error.textContent = json.message || "No fue posible restablecer la clave.";
+      sacudirCaja();
+      return;
+    }
+    $("in-codigo").value = "";
+    $("in-clave-nueva").value = "";
+    usuarioPendiente = json.data.usuario;
+    $("codigo-nuevo").textContent = json.data.codigo_recuperacion;
+    verVista("codigo");
+  } catch (errorRed) {
+    console.error("Error al recuperar la clave:", errorRed);
+    error.textContent = "No fue posible conectar con el servidor.";
+  } finally {
+    boton.disabled = false;
+    boton.textContent = "Restablecer clave";
+  }
+}
+
+async function copiarCodigo() {
+  const boton = $("btn-copiar-codigo");
+  try {
+    await navigator.clipboard.writeText($("codigo-nuevo").textContent);
+    boton.textContent = "Copiado ✓";
+  } catch {
+    boton.textContent = "Selecciónalo y cópialo a mano";
+  }
+}
+
+function alternarClave(idCampo, idBoton) {
+  const campoClave = $(idCampo);
   const visible = campoClave.type === "password";
   campoClave.type = visible ? "text" : "password";
-  $("btn-ver-clave").setAttribute("aria-pressed", String(visible));
-  $("btn-ver-clave").setAttribute("aria-label", visible ? "Ocultar contraseña" : "Mostrar contraseña");
+  $(idBoton).setAttribute("aria-pressed", String(visible));
+  $(idBoton).setAttribute("aria-label", visible ? "Ocultar clave" : "Mostrar clave");
 }
 
 /* ------------------------------------------------------------ estado del VPS */
 
-const formatoGB = (bytes) => `${(bytes / 1024 ** 3).toFixed(1)} GB`;
-
-function formatoUptime(segundos) {
-  const d = Math.floor(segundos / 86400);
-  const h = Math.floor((segundos % 86400) / 3600);
-  const m = Math.floor((segundos % 3600) / 60);
-  return d > 0 ? `${d} d ${h} h` : `${h} h ${m} min`;
-}
-
 function pintarEstado(e) {
-  const pm = e.memoria.total ? Math.round((e.memoria.usada / e.memoria.total) * 100) : 0;
-  const pd = e.disco.total ? Math.round((e.disco.usado / e.disco.total) * 100) : 0;
-  $("sys-line").innerHTML = "";
-  const punto = document.createElement("span");
-  punto.className = "ok";
-  punto.textContent = "● ";
-  $("sys-line").append(
-    punto,
-    `servidor activo ${formatoUptime(e.uptime_s)} · memoria ${pm}% (${formatoGB(e.memoria.usada)}) · disco ${pd}% · ${e.tips} tips · Ctrl K para buscar`,
-  );
-
   for (const app of e.apps) {
     const tarjeta = document.querySelector(`.card[data-app="${app.id}"]`);
     if (!tarjeta) continue;
@@ -311,8 +361,18 @@ function configurarNavegacion() {
   $("btn-cerrar-sesion-home").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-apps").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-clases").addEventListener("click", cerrarSesion);
-  $("btn-ver-clave").addEventListener("click", alternarClave);
+  $("btn-ver-clave").addEventListener("click", () => alternarClave("in-clave", "btn-ver-clave"));
+  $("btn-ver-clave-nueva").addEventListener("click", () => alternarClave("in-clave-nueva", "btn-ver-clave-nueva"));
   $("form-login").addEventListener("submit", enviarAcceso);
+  $("form-recuperar").addEventListener("submit", enviarRecuperacion);
+  $("btn-olvide").addEventListener("click", () => verVista("recuperar"));
+  $("btn-volver-login").addEventListener("click", () => verVista("login"));
+  $("btn-copiar-codigo").addEventListener("click", copiarCodigo);
+  $("btn-continuar").addEventListener("click", () => {
+    $("codigo-nuevo").textContent = "";
+    $("btn-copiar-codigo").textContent = "Copiar código";
+    entrar(usuarioPendiente);
+  });
   window.addEventListener("hashchange", resolverRuta);
   if (!window.location.hash) window.location.hash = "home";
 }
