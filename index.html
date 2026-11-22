@@ -5,51 +5,96 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-  <title>PIA - Personal Information Admin</title>
-  <link rel="stylesheet" href="css/style.css?v=20261010-05" />
+  <meta name="description" content="SmartekSoft: espacio personal privado de tips, clases y herramientas." />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>SmartekSoft</title>
+  <link rel="preload" href="fonts/Sora.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/style.css?v=20261122-01" />
+  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-01" />
   <link rel="shortcut icon" href="./images/code.ico" type="image/x-icon" />
 </head>
 
 <body>
+  <!-- Escritorio: se muestra solo con sesión iniciada -->
   <section id="home-screen" class="home-screen">
-    <div class="home-content">
-      <h1>SmarTekSoft PIA</h1>
-      <p class="home-subtitle">Personal Information Admin</p>
+    <div class="desk">
+      <header class="desk-bar">
+        <span class="wordmark">SmartekSoft</span>
+        <div class="desk-user">
+          <span id="home-nombre-corto" class="desk-user-name"></span>
+          <button id="btn-cerrar-sesion-home" class="desk-logout" type="button">Cerrar sesión</button>
+        </div>
+      </header>
 
-      <div class="module-grid">
-        <button id="btn-modulo-tips" class="module-card" type="button">
-          <span class="module-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="img" focusable="false">
-              <path d="M9 18h6M10 21h4M12 3a7 7 0 0 0-4 12.7c.7.5 1.1 1.2 1.1 2h5.8c0-.8.4-1.5 1.1-2A7 7 0 0 0 12 3z"></path>
-            </svg>
-          </span>
-          <span class="module-name">Tips</span>
-          <span class="module-desc">Notas tecnicas en Markdown</span>
-        </button>
-
-        <button id="btn-modulo-drive" class="module-card" type="button">
-          <span class="module-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="img" focusable="false">
-              <path d="M3 7h7l2 2h9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"></path>
-              <path d="M3 10h18"></path>
-            </svg>
-          </span>
-          <span class="module-name">Drive</span>
-          <span class="module-desc">Archivos y carpetas personales</span>
-        </button>
+      <div class="desk-intro">
+        <h1 id="home-saludo">Hola</h1>
+        <p>Tu espacio privado. Elige por dónde seguir.</p>
       </div>
+
+      <nav class="desk-modules" aria-label="Módulos">
+        <button id="btn-modulo-tips" class="desk-module desk-module-main" type="button">
+          <span class="desk-module-name">Tips</span>
+          <span class="desk-module-desc">Notas técnicas en Markdown, con búsqueda y categorías.</span>
+        </button>
+
+        <button id="btn-modulo-drive" class="desk-module desk-module-wide" type="button">
+          <span class="desk-module-name">Drive</span>
+          <span class="desk-module-desc">Archivos y carpetas personales.</span>
+          <span class="desk-module-state">En preparación</span>
+        </button>
+
+        <div class="desk-module desk-module-soon" aria-disabled="true">
+          <span class="desk-module-name">Tutoriales</span>
+          <span class="desk-module-desc">Paso a paso con código y capturas.</span>
+          <span class="desk-module-state">Próximamente</span>
+        </div>
+
+        <div class="desk-module desk-module-soon" aria-disabled="true">
+          <span class="desk-module-name">Clases</span>
+          <span class="desk-module-desc">Materias, fichas y sesiones.</span>
+          <span class="desk-module-state">Próximamente</span>
+        </div>
+
+        <div class="desk-module desk-module-soon" aria-disabled="true">
+          <span class="desk-module-name">Herramientas</span>
+          <span class="desk-module-desc">Estudio y desarrollo en línea.</span>
+          <span class="desk-module-state">Próximamente</span>
+        </div>
+      </nav>
+
+      <section class="desk-apps" aria-labelledby="apps-titulo">
+        <h2 id="apps-titulo">Mis apps</h2>
+        <ul class="desk-apps-list">
+          <li><a href="https://sql.smarteksoft.com" target="_blank" rel="noopener">
+            <span class="desk-app-name">Bases de datos</span>
+            <span class="desk-app-host">sql.smarteksoft.com</span>
+          </a></li>
+          <li><a href="https://raee.smarteksoft.com" target="_blank" rel="noopener">
+            <span class="desk-app-name">RAEE</span>
+            <span class="desk-app-host">raee.smarteksoft.com</span>
+          </a></li>
+          <li><a href="https://soporte.smarteksoft.com" target="_blank" rel="noopener">
+            <span class="desk-app-name">Soporte</span>
+            <span class="desk-app-host">soporte.smarteksoft.com</span>
+          </a></li>
+          <li><a href="https://tucultura.smarteksoft.com" target="_blank" rel="noopener">
+            <span class="desk-app-name">Tu Cultura</span>
+            <span class="desk-app-host">tucultura.smarteksoft.com</span>
+          </a></li>
+        </ul>
+      </section>
     </div>
   </section>
 
   <div id="app" class="screen-hidden">
     <aside id="sidebar">
       <div class="tips-title-row">
-        <h1>PIA Tips</h1>
+        <h1>Tips</h1>
         <button id="btn-cerrar-sesion" class="logout-icon hidden" type="button" aria-label="Cerrar sesion" title="Cerrar sesion">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M21 3v18H9"></path></svg>
         </button>
       </div>
-      <button id="btn-volver-home-tips" class="btn-home" type="button">&larr; Inicio PIA</button>
+      <button id="btn-volver-home-tips" class="btn-home" type="button">&larr; Inicio</button>
 
       <!-- Acciones sólo visibles en DESKTOP -->
       <div class="sidebar-actions desktop-only">
@@ -95,19 +140,29 @@
 
   <section id="drive-screen" class="drive-screen screen-hidden">
     <div class="drive-placeholder">
-      <h2>PIA Drive</h2>
+      <h2>Drive</h2>
       <p>Modulo en preparacion. Aqui se administraran carpetas y archivos con integracion a Dropbox.</p>
       <button id="btn-volver-home-drive" class="btn-primary" type="button">Volver al inicio</button>
     </div>
   </section>
 
-  <div id="login-modal" class="login-modal hidden" role="dialog" aria-modal="true" aria-labelledby="login-title">
-    <div class="login-panel">
-      <h2 id="login-title">Accede a PIA</h2>
-      <p>Inicia sesion con tu cuenta de Google para consultar la informacion.</p>
-      <div id="google-signin-button" aria-label="Iniciar sesion con Google"></div>
-      <p id="login-error" class="login-error" role="alert"></p>
-      <p class="login-google-note">Los permisos dependen del rol asignado a tu cuenta.</p>
+  <!-- Portada: pantalla completa mientras no hay sesión -->
+  <div id="login-modal" class="gate hidden" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <header class="gate-bar">
+      <span class="wordmark">SmartekSoft</span>
+      <span class="gate-private">Acceso privado</span>
+    </header>
+
+    <div class="gate-body">
+      <h1 id="gate-title" class="gate-name"><span>Smartek</span><span>Soft</span></h1>
+
+      <div class="gate-access">
+        <h2>Entra a tu espacio</h2>
+        <p>Tips, clases y herramientas en un solo lugar. Inicia sesión con tu cuenta de Google.</p>
+        <div id="google-signin-button" aria-label="Iniciar sesion con Google"></div>
+        <p id="login-error" class="login-error" role="alert"></p>
+        <p class="gate-note">Los permisos dependen del rol asignado a tu cuenta.</p>
+      </div>
     </div>
   </div>
 
@@ -115,7 +170,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async></script>
-  <script src="js/app.js?v=20261010-05" type="module" defer></script>
+  <script src="js/app.js?v=20261122-01" type="module" defer></script>
 </body>
 
 </html>

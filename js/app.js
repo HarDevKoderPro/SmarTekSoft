@@ -11,7 +11,7 @@ let googleClientId = "";
 async function asegurarModuloTips() {
   if (tipsModuleLoaded) return;
   try {
-    await import("./script.js?v=20261010-05");
+    await import("./script.js?v=20261122-01");
     tipsModuleLoaded = true;
   } catch (error) {
     console.error("No se pudo cargar el modulo Tips:", error);
@@ -32,6 +32,10 @@ function resolverRuta() {
 function actualizarInterfazSesion() {
   const cerrarSesion = document.getElementById("btn-cerrar-sesion");
   cerrarSesion.classList.toggle("hidden", !window.piaUsuario);
+  const nombre = window.piaUsuario?.nombre_mostrado || window.piaUsuario?.usuario || "";
+  const primerNombre = nombre.trim().split(/\s+/)[0] || "";
+  document.getElementById("home-saludo").textContent = primerNombre ? `Hola, ${primerNombre}` : "Hola";
+  document.getElementById("home-nombre-corto").textContent = nombre;
   document.dispatchEvent(new CustomEvent("pia-sesion-actualizada", { detail: window.piaUsuario }));
 }
 
@@ -76,7 +80,7 @@ function esperarGoogleYRenderizar() {
     use_fedcm_for_prompt: true,
   });
   window.google.accounts.id.renderButton(document.getElementById("google-signin-button"), {
-    theme: "outline", size: "large", text: "continue_with", width: 300,
+    theme: "filled_black", size: "large", text: "continue_with", width: 300,
   });
   window.google.accounts.id.prompt();
 }
@@ -134,6 +138,7 @@ function configurarNavegacion() {
   document.getElementById("btn-volver-home-tips").addEventListener("click", () => navegar("home"));
   document.getElementById("btn-volver-home-drive").addEventListener("click", () => navegar("home"));
   document.getElementById("btn-cerrar-sesion").addEventListener("click", cerrarSesion);
+  document.getElementById("btn-cerrar-sesion-home").addEventListener("click", cerrarSesion);
   window.addEventListener("hashchange", resolverRuta);
   if (!window.location.hash) window.location.hash = "home";
   else resolverRuta();
