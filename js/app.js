@@ -1,6 +1,6 @@
-import { iniciarMatrix } from "./efectos.js?v=20261122-19";
+import { iniciarMatrix } from "./efectos.js?v=20261122-20";
 
-const VERSION = "20261122-19";
+const VERSION = "20261122-20";
 const routes = {
   home: document.getElementById("home-screen"),
   clases: document.getElementById("clases-screen"),
@@ -61,7 +61,6 @@ function navegar(routeName) {
 /* -------------------------------------------------------------------- sesión */
 
 function actualizarInterfazSesion() {
-  $("btn-cerrar-sesion").classList.toggle("hidden", !window.piaUsuario);
   document.dispatchEvent(new CustomEvent("pia-sesion-actualizada", { detail: window.piaUsuario }));
 }
 
@@ -223,8 +222,13 @@ async function copiarCodigo() {
 // Si el navegador puede ocultar el texto con CSS, el campo es de texto normal (sin sugerencias).
 const ocultaConCss = window.CSS?.supports?.("-webkit-text-security", "disc") ?? false;
 
+function nombreAlAzar() {
+  return `f${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function prepararCampoSecreto(idCampo) {
   const campoClave = $(idCampo);
+  campoClave.name = nombreAlAzar();
   campoClave.setAttribute("autocomplete", "off");
   campoClave.setAttribute("autocorrect", "off");
   campoClave.setAttribute("autocapitalize", "none");
@@ -374,10 +378,9 @@ function configurarNavegacion() {
   $("btn-volver-home-drive").addEventListener("click", () => navegar("home"));
   $("btn-volver-home-apps").addEventListener("click", () => navegar("home"));
   $("btn-volver-home-clases").addEventListener("click", () => navegar("home"));
-  $("btn-cerrar-sesion").addEventListener("click", cerrarSesion);
   $("btn-cerrar-sesion-home").addEventListener("click", cerrarSesion);
-  $("btn-cerrar-sesion-apps").addEventListener("click", cerrarSesion);
-  $("btn-cerrar-sesion-clases").addEventListener("click", cerrarSesion);
+  $("in-codigo").name = nombreAlAzar();
+  $("in-codigo").setAttribute("autocomplete", "off");
   prepararCampoSecreto("in-clave");
   prepararCampoSecreto("in-clave-nueva");
   $("btn-ver-clave").addEventListener("click", () => alternarClave("in-clave", "btn-ver-clave"));

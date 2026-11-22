@@ -9,8 +9,8 @@
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#000000" />
   <title>SmartekSoft</title>
-  <link rel="stylesheet" href="css/style.css?v=20261122-19" />
-  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-19" />
+  <link rel="stylesheet" href="css/style.css?v=20261122-20" />
+  <link rel="stylesheet" href="css/smarteksoft.css?v=20261122-20" />
   <link rel="shortcut icon" href="./images/code.ico" type="image/x-icon" />
 </head>
 
@@ -19,7 +19,9 @@
 
   <!-- BIENVENIDA: solo con sesión iniciada -->
   <section id="home-screen" class="pantalla screen-hidden">
-    <button id="btn-cerrar-sesion-home" class="logout-link" type="button">Salir</button>
+    <button id="btn-cerrar-sesion-home" class="logout-link" type="button" aria-label="Cerrar sesión" title="Cerrar sesión">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </button>
     <div class="welcome-container">
       <div class="profile-frame">
         <img src="./images/portada.webp" alt="Espacio de trabajo" width="160" height="160" />
@@ -60,7 +62,6 @@
 
   <!-- CLASES -->
   <section id="clases-screen" class="pantalla screen-hidden">
-    <button id="btn-cerrar-sesion-clases" class="logout-link" type="button">Salir</button>
     <div class="welcome-container">
       <header>
         <h1 class="highlight">CLASES</h1>
@@ -84,7 +85,6 @@
 
   <!-- MIS APPS -->
   <section id="apps-screen" class="pantalla screen-hidden">
-    <button id="btn-cerrar-sesion-apps" class="logout-link" type="button">Salir</button>
     <div class="welcome-container">
       <header>
         <h1>MIS <span class="highlight">APPS</span></h1>
@@ -122,9 +122,6 @@
     <aside id="sidebar">
       <div class="tips-title-row">
         <h1>Tips</h1>
-        <button id="btn-cerrar-sesion" class="logout-icon hidden" type="button" aria-label="Cerrar sesion" title="Cerrar sesion">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M21 3v18H9"></path></svg>
-        </button>
       </div>
       <button id="btn-volver-home-tips" class="btn-home" type="button">&larr; Inicio</button>
 
@@ -247,7 +244,7 @@
   <!-- Marked.js para renderizar Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-  <script src="js/app.js?v=20261122-19" type="module" defer></script>
+  <script src="js/app.js?v=20261122-20" type="module" defer></script>
 </body>
 
 </html>
